@@ -1,0 +1,3 @@
+app.tasks.endpointMessage: "Hello World from Config"
+server:
+    port: 9091
