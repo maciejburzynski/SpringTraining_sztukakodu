@@ -1,4 +1,4 @@
-package pl.maltoza.tasks;
+package pl.maltoza.tasks.Task;
 
 import java.util.List;
 

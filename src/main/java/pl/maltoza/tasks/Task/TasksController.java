@@ -1,4 +1,4 @@
-package pl.maltoza.tasks;
+package pl.maltoza.tasks.Task;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
