@@ -10,9 +10,9 @@ import java.time.LocalDate;
 @Setter
 @ToString
 public class Task {
-
-   private String author;
+   private Long id;
+//   private String author;
    private String title;
-   private LocalDate createdAt;
+//   private LocalDate createdAt;
 
 }

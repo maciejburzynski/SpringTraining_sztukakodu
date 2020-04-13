@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
-//@Component
+@Component
 @Data
-//@ConfigurationProperties(prefix = "app.tasks")
+@ConfigurationProperties(prefix = "app.tasks")
 public class TasksConfig {
 private String endpointMessage;
 }
