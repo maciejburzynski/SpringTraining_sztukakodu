@@ -1,6 +1,7 @@
-package pl.maltoza.tasks.Task;
+package pl.maltoza.tasks.Boundary;
 
 import org.springframework.stereotype.Component;
+import pl.maltoza.tasks.Entity.Task;
 
 import java.util.ArrayList;
 import java.util.HashSet;

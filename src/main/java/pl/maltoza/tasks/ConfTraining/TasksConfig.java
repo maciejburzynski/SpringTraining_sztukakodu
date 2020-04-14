@@ -1,4 +1,4 @@
-package pl.maltoza.tasks.Task;
+package pl.maltoza.tasks.ConfTraining;
 
 import lombok.Data;
 import lombok.Getter;

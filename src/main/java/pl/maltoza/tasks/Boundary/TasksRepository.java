@@ -1,4 +1,6 @@
-package pl.maltoza.tasks.Task;
+package pl.maltoza.tasks.Boundary;
+
+import pl.maltoza.tasks.Entity.Task;
 
 import java.util.List;
 
