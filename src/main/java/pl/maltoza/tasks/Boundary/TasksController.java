@@ -9,7 +9,6 @@ import pl.maltoza.tasks.Control.TasksService;
 import pl.maltoza.tasks.Entity.Task;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -30,12 +29,11 @@ public class TasksController {
     }
 
     @PostConstruct
-    void init(){
-    tasksService.addTask("Title 1","Description 1");
-    tasksService.addTask("Title 2","Description 2");
-    tasksService.addTask("Title 3","Description 3");
+    void init() {
+        tasksService.addTask("Title 1", "Description 1");
+        tasksService.addTask("Title 2", "Description 2");
+        tasksService.addTask("Title 3", "Description 3");
     }
-
 
 
     @GetMapping
@@ -46,10 +44,10 @@ public class TasksController {
                 .collect(toList());
     }
 
-    @GetMapping(path = "/{Id}")
-    public TaskResponse getTaskById(@PathVariable Long Id) {
-        logger.info("Fetching task no. {} time...", Id);
-        return toTaskResponse(tasksRepository.fetchById(Id));
+    @GetMapping(path = "/{id}")
+    public TaskResponse getTaskByid(@PathVariable Long id) {
+        logger.info("Fetching task no. {} time...", id);
+        return toTaskResponse(tasksRepository.fetchById(id));
     }
 
     @PostMapping
@@ -58,15 +56,16 @@ public class TasksController {
         tasksService.addTask(task.title, task.description);
     }
 
-    @DeleteMapping(path = "/{Id}")
-    public void deleteTask(@PathVariable Long Id) {
-        logger.info("Deleting task no. {} time...", Id);
-        tasksRepository.deleteById(Id);
+    @DeleteMapping(path = "/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        logger.info("Deleting task no. {} time...", id);
+        tasksRepository.deleteById(id);
     }
 
-    @PutMapping
-    public void updateTask() {
+    @PutMapping(path = "/{id}")
+    public void updateTask(@PathVariable Long id, @RequestBody UpdateTaskRequest request) {
         logger.info("Updating task...");
+        tasksService.updateTask(id, request.title, request.description);
     }
 
 
@@ -75,6 +74,7 @@ public class TasksController {
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                LocalDateTime.now());
+                task.getCreatedAt());
+
     }
 }

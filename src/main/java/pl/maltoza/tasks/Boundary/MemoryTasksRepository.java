@@ -3,10 +3,7 @@ package pl.maltoza.tasks.Boundary;
 import org.springframework.stereotype.Component;
 import pl.maltoza.tasks.Entity.Task;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class MemoryTasksRepository implements TasksRepository {
@@ -24,18 +21,28 @@ public class MemoryTasksRepository implements TasksRepository {
 
     @Override
     public Task fetchById(Long id) {
-        return tasks.stream()
-                .filter(task -> task.getId().equals(id))
-                .findFirst()
+        return findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found "));
 
     }
 
     @Override
     public void deleteById(Long id) {
-        tasks.stream()
-                .filter(task -> task.getId().equals(id))
-                .findFirst()
+        findById(id)
                 .ifPresent(task -> tasks.remove(task));
+    }
+
+    @Override
+    public void update(Long id, String title, String description) {
+        findById(id).ifPresent(task -> {
+                task.setTitle(title);
+                task.setDescription(description);
+        });
+    }
+
+    private Optional<Task> findById(Long id) {
+        return tasks.stream()
+                .filter(task -> task.getId().equals(id))
+                .findFirst();
     }
 }
