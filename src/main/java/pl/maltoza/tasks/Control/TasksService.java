@@ -6,7 +6,11 @@ import pl.maltoza.tasks.Boundary.TasksRepository;
 import pl.maltoza.tasks.Clock;
 import pl.maltoza.tasks.Entity.Task;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class TasksService {
@@ -31,5 +35,17 @@ public class TasksService {
 
     public void updateTask(Long id, String title, String description) {
         tasksRepository.update(id, title, description);
+    }
+    public List<Task> fetchAll(){
+        return tasksRepository.fetchAll();
+    }
+    public List<Task> filterAllByQuery(String query){
+        return tasksRepository.fetchAll()
+                .stream()
+                .filter(task -> {
+                    return task.getTitle().toUpperCase().contains(query.toUpperCase()) ||
+                task.getDescription().toUpperCase().contains(query.toUpperCase());
+                })
+                .collect(toList());
     }
 }

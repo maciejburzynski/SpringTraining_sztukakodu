@@ -10,6 +10,7 @@ import pl.maltoza.tasks.Entity.Task;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -37,9 +38,11 @@ public class TasksController {
 
 
     @GetMapping
-    public List<TaskResponse> getTasks() {
-        logger.info("Fetching time...");
-        return tasksRepository.fetchAll().stream()
+    public List<TaskResponse> getTasks(@RequestParam Optional <String> query) {
+        logger.info("Fetching time of {}...",query);
+        return query.map(tasksService::filterAllByQuery)
+                .orElseGet(tasksService::fetchAll)
+                .stream()
                 .map(task -> toTaskResponse(task))
                 .collect(toList());
     }

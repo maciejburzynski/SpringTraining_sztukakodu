@@ -34,7 +34,8 @@ public class MemoryTasksRepository implements TasksRepository {
 
     @Override
     public void update(Long id, String title, String description) {
-        findById(id).ifPresent(task -> {
+        findById(id)
+                .ifPresent(task -> {
                 task.setTitle(title);
                 task.setDescription(description);
         });
