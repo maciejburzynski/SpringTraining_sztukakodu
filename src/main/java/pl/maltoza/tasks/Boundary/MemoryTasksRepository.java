@@ -1,6 +1,7 @@
 package pl.maltoza.tasks.Boundary;
 
 import org.springframework.stereotype.Component;
+import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tasks.Entity.Task;
 
 import java.util.*;
@@ -34,11 +35,10 @@ public class MemoryTasksRepository implements TasksRepository {
 
     @Override
     public void update(Long id, String title, String description) {
-        findById(id)
-                .ifPresent(task -> {
+        Task task = findById(id)
+                .orElseThrow(() -> new NotFoundException("Task not found : " + id));
                 task.setTitle(title);
                 task.setDescription(description);
-        });
     }
 
     private Optional<Task> findById(Long id) {
