@@ -1,11 +1,12 @@
 package pl.maltoza.tasks.Boundary;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tasks.Entity.Task;
 
 import java.util.*;
-
+@Getter
 @Component
 public class MemoryTasksRepository implements TasksRepository {
     private final Set<Task> tasks = new HashSet<>();
@@ -23,7 +24,7 @@ public class MemoryTasksRepository implements TasksRepository {
     @Override
     public Task fetchById(Long id) {
         return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found "));
+                .orElseThrow(() -> new NotFoundException("Task not found "));
 
     }
 
