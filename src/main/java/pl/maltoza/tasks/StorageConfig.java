@@ -10,14 +10,10 @@ import java.nio.file.Path;
 
 @Slf4j
 @Configuration
-public class TasktreeConfig {
-
+public class StorageConfig {
     @Bean
-    public Clock clock() {
-        log.info("Registering clock bean");
-        return new SystemClock();
+    public StorageService storageService() {
+        log.info("Registering Storage service as a bean");
+        return new FileStorageService(Path.of("/Users/maciejburzynski/Desktop/testDir"));
     }
-
-
 }
-

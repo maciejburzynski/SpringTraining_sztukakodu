@@ -16,11 +16,13 @@ import pl.maltoza.tasks.Entity.Task;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -45,20 +47,15 @@ public class TasksController {
 
     @GetMapping
     public ResponseEntity getTasks(@RequestParam Optional<String> query) {
-        logger.info("Fetching time of {}...", query);
-
+        logger.info("Fetching all tasks time ...");
         List<TaskResponse> collectedTasks = query.map(tasksService::filterAllByQuery)
                 .orElseGet(tasksService::fetchAll)
                 .stream()
                 .map(task -> toTaskResponse(task))
                 .collect(toList());
-
-        if (collectedTasks.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else {
-            return ResponseEntity.ok()
-                    .body(collectedTasks);
-        }
+        return ResponseEntity
+                .ok()
+                .body(collectedTasks);
     }
 
     @GetMapping(path = "/{id}")
@@ -67,32 +64,63 @@ public class TasksController {
             toTaskResponse(tasksRepository.fetchById(id));
         } catch (NotFoundException e) {
             logger.info("Fetching task no {}  no available", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Task not found  : " + id);
         }
         logger.info("Fetching task no. {} time...", id);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(toTaskResponse(tasksRepository.fetchById(id)));
     }
 
     @GetMapping(path = "/{id}/attachments/{filename}")
     public ResponseEntity getAttachment(@PathVariable Long id, @PathVariable String filename, HttpServletRequest request)
             throws IOException {
-        logger.info("Fetching file: {} time...", filename);
-        Resource resource = storageService.loadFile(filename);
-        String mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+
+        String mimeType;
+        Resource resource;
+
+        try {
+            logger.info("Fetching file: {} time...", filename);
+            resource = storageService.loadFile(filename);
+            mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+
         if (mimeType == null) {
             mimeType = "application/octet-stream";
         }
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .ok()
                 .contentType(MediaType.parseMediaType(mimeType))
                 .body(resource);
     }
 
     @PostMapping(path = "/{id}/attachments")
-    public ResponseEntity addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        logger.info("Handilng file upload: {}", file.getName());
-        storageService.saveFile(id, file);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws
+            IOException {
+        String filePath = storageService.loadFile(file.getName()).getFile().getPath().toString();
+        try {
+            tasksRepository.addFilePath(id, file, filePath);
+            logger.info("Handling file upload: {}", file.getName());
+            storageService.saveFile(id, file);
+        } catch (IOException e) {
+            logger.info("Unable to upload: {}", file.getName());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        } catch (NotFoundException ne){
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(ne.getMessage());
+        }
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
 
@@ -100,17 +128,29 @@ public class TasksController {
     public ResponseEntity addTask(@RequestBody CreateTaskRequest task) {
         logger.info("Adding time...");
         tasksService.addTask(task.getTitle(), task.getDescription());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .build();
     }
 
     @DeleteMapping(path = "/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public ResponseEntity deleteTask(@PathVariable Long id) {
         logger.info("Deleting task no. {} time...", id);
-        tasksRepository.deleteById(id);
+        try {
+            tasksRepository.deleteById(id);
+        } catch (NotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity updateTask(@PathVariable Long id, @RequestBody UpdateTaskRequest request) {
+    public ResponseEntity updateTask(HttpServletResponse response, @PathVariable Long
+            id, @RequestBody UpdateTaskRequest request) {
         try {
             tasksService.updateTask(id, request.title, request.description);
             logger.info("Updating task...");
@@ -129,7 +169,8 @@ public class TasksController {
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                task.getCreatedAt());
-
+                task.getCreatedAt(),
+                task.getFiles());
     }
+
 }

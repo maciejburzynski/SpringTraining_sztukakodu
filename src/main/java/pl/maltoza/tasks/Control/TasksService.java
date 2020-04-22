@@ -6,6 +6,7 @@ import pl.maltoza.tasks.Boundary.TasksRepository;
 import pl.maltoza.tasks.Clock;
 import pl.maltoza.tasks.Entity.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -29,7 +30,8 @@ public class TasksService {
                 new Task(nextTaskIdGenerator.getAndIncrement(),
                         title,
                         description,
-                        clock.time())
+                        clock.time(),
+                        new ArrayList<>())
         );
     }
 
