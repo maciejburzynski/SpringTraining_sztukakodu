@@ -36,14 +36,12 @@ public class TasksController {
     private final TasksService tasksService;
     private final StorageService storageService;
 
-
     @PostConstruct
     void init() {
         tasksService.addTask("Title 1", "Description 1");
         tasksService.addTask("Title 2", "Description 2");
         tasksService.addTask("Title 3", "Description 3");
     }
-
 
     @GetMapping
     public ResponseEntity getTasks(@RequestParam Optional<String> query) {
@@ -113,7 +111,7 @@ public class TasksController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());
-        } catch (NotFoundException ne){
+        } catch (NotFoundException ne) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(ne.getMessage());
@@ -122,7 +120,6 @@ public class TasksController {
                 .noContent()
                 .build();
     }
-
 
     @PostMapping
     public ResponseEntity addTask(@RequestBody CreateTaskRequest task) {
@@ -163,7 +160,6 @@ public class TasksController {
         }
     }
 
-
     private TaskResponse toTaskResponse(Task task) {
         return new TaskResponse(
                 task.getId(),
@@ -172,5 +168,4 @@ public class TasksController {
                 task.getCreatedAt(),
                 task.getFiles());
     }
-
 }

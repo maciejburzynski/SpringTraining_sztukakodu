@@ -45,20 +45,17 @@ public class MemoryTasksRepository implements TasksRepository {
         task.setTitle(title);
         task.setDescription(description);
     }
-
-    @Override
-    public Optional<Task> findById(Long id) {
-        return tasks.stream()
-                .filter(task -> task.getId().equals(id))
-                .findFirst();
-
-
-    }
-
+    
     @Override
     public void addFilePath(Long id, MultipartFile file, String filePath) {
         Task task = findById(id)
                 .orElseThrow(() -> new NotFoundException("Task not found : " + id));
         task.getFiles().add(filePath);
+    }
+
+    private Optional<Task> findById(Long id) {
+        return tasks.stream()
+                .filter(task -> task.getId().equals(id))
+                .findFirst();
     }
 }
