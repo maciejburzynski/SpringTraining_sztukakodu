@@ -17,5 +17,5 @@ import java.nio.file.Path;
 @Component
 @ConfigurationProperties(prefix = "app.tasks")
 public class StorageConfig {
-    private Path addFilePath;
+    private String PathToAddFile;
 }

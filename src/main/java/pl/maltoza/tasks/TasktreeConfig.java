@@ -27,7 +27,7 @@ public class TasktreeConfig {
     @Bean
     public StorageService storageService() {
         log.info("Registering Storage service as a bean");
-        return new FileStorageService(storageConfig.getAddFilePath());
+        return new FileStorageService(Path.of(storageConfig.getPathToAddFile()));
     }
 
 }

@@ -79,29 +79,31 @@ public class TasksController {
         String mimeType;
         Resource resource;
 
-        try {
-            logger.info("Fetching file: {} time...", filename);
-            resource = storageService.loadFile(filename);
-            mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
-        }
+        logger.info("Fetching file: {} time...", filename);
+        resource = storageService.loadFile(filename);
+
+        mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
         if (mimeType == null) {
             mimeType = "application/octet-stream";
         }
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .body(resource);
+        if (tasksRepository.fetchById(id).getFiles().isEmpty())
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    .build();
+        else {
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    .body(resource);
+        }
     }
 
     @PostMapping(path = "/{id}/attachments")
     public ResponseEntity addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws
             IOException {
-        String filePath = storageService.loadFile(file.getName()).getFile().getPath().toString();
+        String filePath = storageService.loadFile(file.getName()).getFile().getPath();
         try {
             tasksRepository.addFilePath(id, file, filePath);
             logger.info("Handling file upload: {}", file.getName());
@@ -111,10 +113,6 @@ public class TasksController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());
-        } catch (NotFoundException ne) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(ne.getMessage());
         }
         return ResponseEntity
                 .noContent()
@@ -133,13 +131,7 @@ public class TasksController {
     @DeleteMapping(path = "/{id}")
     public ResponseEntity deleteTask(@PathVariable Long id) {
         logger.info("Deleting task no. {} time...", id);
-        try {
-            tasksRepository.deleteById(id);
-        } catch (NotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
+        tasksRepository.deleteById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
@@ -148,16 +140,9 @@ public class TasksController {
     @PutMapping(path = "/{id}")
     public ResponseEntity updateTask(HttpServletResponse response, @PathVariable Long
             id, @RequestBody UpdateTaskRequest request) {
-        try {
-            tasksService.updateTask(id, request.title, request.description);
-            logger.info("Updating task...");
-            return ResponseEntity.noContent().build();
-        } catch (NotFoundException e) {
-            logger.info("unable task updating...");
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
+        tasksService.updateTask(id, request.title, request.description);
+        logger.info("Updating task...");
+        return ResponseEntity.noContent().build();
     }
 
     private TaskResponse toTaskResponse(Task task) {
