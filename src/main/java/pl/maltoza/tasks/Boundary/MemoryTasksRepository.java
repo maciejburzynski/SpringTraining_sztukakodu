@@ -45,12 +45,15 @@ public class MemoryTasksRepository implements TasksRepository {
         task.setTitle(title);
         task.setDescription(description);
     }
-    
+
     @Override
     public void addFilePath(Long id, MultipartFile file, String filePath) {
         Task task = findById(id)
                 .orElseThrow(() -> new NotFoundException("Task not found : " + id));
-        task.getFiles().add(filePath);
+        boolean isUnique = !task.getFiles().contains(filePath);
+        if (isUnique) {
+            task.getFiles().add(filePath);
+        }
     }
 
     private Optional<Task> findById(Long id) {
