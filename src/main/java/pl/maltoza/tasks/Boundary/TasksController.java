@@ -80,6 +80,7 @@ public class TasksController {
         Resource resource;
 
         logger.info("Fetching file: {} time...", filename);
+        tasksRepository.fetchById(id);
         resource = storageService.loadFile(filename);
 
         mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
