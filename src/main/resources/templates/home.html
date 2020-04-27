@@ -1,0 +1,29 @@
+<! DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Tasktree i chuj</title>
+
+</head>
+<body>
+<h1>it's kurwa working</h1>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Tytuł</th>
+        <th>Opis</th>
+        <th>Data utworzenia</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="task: ${tasks}">
+        <td th:text="${task.id}"></td>
+        <td th:text="${task.title}"></td>
+        <td th:text="${task.description}"></td>
+        <td th:text="${task.createdAt}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
