@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @Slf4j
-@RequestMapping(path = ("/tasks"))
+@RequestMapping(value = ("/RestAPI/tasks"))
 @RequiredArgsConstructor
 
 public class TasksController {
