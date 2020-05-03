@@ -22,8 +22,34 @@
         <td th:text="${task.title}"></td>
         <td th:text="${task.description}"></td>
         <td th:text="${task.createdAt}"></td>
+        <td>
+            <form action="#" th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post">
+                <button type="submit">Usuń</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>
+<form action="#" th:object="${newTask}" th:action="@{/tasks}" method="post" enctype="multipart/form-data">
+    <fieldset>
+        <label>
+            Tytuł
+            <input type="text" th:field="*{title}">
+        </label>
+    </fieldset>
+    <fieldset>
+        <label>
+            Opis
+            <textarea th:field="*{description}"></textarea>
+        </label>
+    </fieldset>
+    <fieldset>
+        <label>
+            Załącznik
+            <input type="file" name="attachment"/>
+        </label>
+    </fieldset>
+    <button type="submit">Dodaj</button>
+</form>
 </body>
 </html>

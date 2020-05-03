@@ -25,14 +25,16 @@ public class TasksService {
         this.clock = clock;
     }
 
-    public void addTask(String title, String description) {
-        tasksRepository.add(
-                new Task(nextTaskIdGenerator.getAndIncrement(),
-                        title,
-                        description,
-                        clock.time(),
-                        new ArrayList<>())
-        );
+    public Task addTask(String title, String description) {
+       Task task = new Task(
+               nextTaskIdGenerator.getAndIncrement(),
+               title,
+               description,
+               clock.time(),
+               new ArrayList<>()
+       );
+       tasksRepository.add(task);
+        return task;
     }
 
     public void updateTask(Long id, String title, String description) {
@@ -49,5 +51,9 @@ public class TasksService {
                 task.getDescription().toUpperCase().contains(query.toUpperCase());
                 })
                 .collect(toList());
+    }
+
+    public void removeTask(Long id) {
+        tasksRepository.deleteById(id);
     }
 }
