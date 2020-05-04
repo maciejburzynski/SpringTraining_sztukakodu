@@ -2,3 +2,7 @@ app.tasks.endpointMessage: "Hello Worldddddddd from Config"
 server:
     port: 9091
 app.tasks.PathToAddFile: "/Users/maciejburzynski/Desktop/testDir/"
+spring:
+    h2:
+        console:
+            enabled: true

@@ -2,6 +2,7 @@ package pl.maltoza.tasks.Boundary;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tasks.Entity.Task;
@@ -9,7 +10,7 @@ import pl.maltoza.tasks.Entity.Task;
 import java.util.*;
 
 @Getter
-@Component
+@Repository
 public class MemoryTasksRepository implements TasksRepository {
     private final Set<Task> tasks = new HashSet<>();
 
@@ -47,13 +48,8 @@ public class MemoryTasksRepository implements TasksRepository {
     }
 
     @Override
-    public void addFilePath(Long id, MultipartFile file, String filePath) {
-        Task task = findById(id)
-                .orElseThrow(() -> new NotFoundException("Task not found : " + id));
-        boolean isUnique = !task.getFiles().contains(filePath);
-        if (isUnique) {
-            task.getFiles().add(filePath);
-        }
+    public void save(Task task) {
+        tasks.add(task);
     }
 
     private Optional<Task> findById(Long id) {

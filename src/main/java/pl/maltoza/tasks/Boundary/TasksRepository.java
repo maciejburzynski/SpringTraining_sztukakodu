@@ -17,5 +17,5 @@ public interface TasksRepository {
 
     void update(Long id, String title, String description);
 
-    void addFilePath(Long id, MultipartFile file, String filePath);
+    void save(Task task);
 }

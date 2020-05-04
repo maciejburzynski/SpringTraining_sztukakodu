@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @Slf4j
-@RequestMapping(value = ("/RestAPI/tasks"))
+@RequestMapping(value = ("/restapi/tasks"))
 @RequiredArgsConstructor
 
 public class TasksController {
@@ -75,20 +75,24 @@ public class TasksController {
     @GetMapping(path = "/{id}/attachments/{filename}")
     public ResponseEntity getAttachment(@PathVariable Long id, @PathVariable String filename, HttpServletRequest request)
             throws IOException {
-
+        Optional<Resource> attachment = tasksService.loadAttachment(id, filename);
+        if (attachment.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
         String mimeType;
         Resource resource;
 
         logger.info("Fetching file: {} time...", filename);
         tasksRepository.fetchById(id);
-        resource = storageService.loadFile(filename);
-
+        resource = attachment.get();
         mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
         if (mimeType == null) {
             mimeType = "application/octet-stream";
         }
-        if (tasksRepository.fetchById(id).getFiles().isEmpty())
+        if (tasksRepository.fetchById(id).getAttachments().isEmpty())
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .contentType(MediaType.parseMediaType(mimeType))
@@ -102,23 +106,15 @@ public class TasksController {
     }
 
     @PostMapping(path = "/{id}/attachments")
-    public ResponseEntity addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws
-            IOException {
-        String filePath = storageService.loadFile(file.getName()).getFile().getPath();
-        try {
-            tasksRepository.addFilePath(id, file, filePath);
-            logger.info("Handling file upload: {}", file.getName());
-            storageService.saveFile(id, file);
-        } catch (IOException e) {
-            logger.info("Unable to upload: {}", file.getName());
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
-        }
+    public ResponseEntity addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file)
+            throws IOException {
+        tasksService.addTaskAttachment(id, file);
+
         return ResponseEntity
-                .noContent()
+                .status(HttpStatus.OK)
                 .build();
     }
+
 
     @PostMapping
     public ResponseEntity addTask(@RequestBody CreateTaskRequest task) {
@@ -152,6 +148,6 @@ public class TasksController {
                 task.getTitle(),
                 task.getDescription(),
                 task.getCreatedAt(),
-                task.getFiles());
+                task.getAttachments());
     }
 }
