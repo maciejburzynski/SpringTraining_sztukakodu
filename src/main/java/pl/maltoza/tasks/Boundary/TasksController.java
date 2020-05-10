@@ -10,17 +10,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tasks.Control.TasksService;
+import pl.maltoza.tasks.Entity.TagRef;
 import pl.maltoza.tasks.Entity.Task;
+import pl.maltoza.tasks.tags.control.TagsService;
+import pl.maltoza.tasks.tags.entity.Tag;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
@@ -34,42 +37,45 @@ public class TasksController {
     private final Logger logger = LoggerFactory.getLogger(TasksController.class);
     private final TasksRepository tasksRepository;
     private final TasksService tasksService;
-    private final StorageService storageService;
-
-    @PostConstruct
-    void init() {
-        tasksService.addTask("Title 1", "Description 1");
-        tasksService.addTask("Title 2", "Description 2");
-        tasksService.addTask("Title 3", "Description 3");
-    }
+    private final TagsService tagsService;
 
     @GetMapping
-    public ResponseEntity getTasks(@RequestParam Optional<String> query) {
+    public List<TaskResponse> getTasks(@RequestParam Optional<String> query) {
         logger.info("Fetching all tasks time ...");
-        List<TaskResponse> collectedTasks = query.map(tasksService::filterAllByQuery)
+        return query.map(tasksService::filterAllByQuery)
                 .orElseGet(tasksService::fetchAll)
                 .stream()
-                .map(task -> toTaskResponse(task))
+                .map(this::toTaskResponse)
                 .collect(toList());
+    }
+
+    private TaskResponse toTaskResponse(Task task) {
+        List<Long> tagIds = task.getTagRefs().stream().map(TagRef::getTag).collect(toList());
+        Set<Tag> tags = tagsService.findAllById(tagIds);
+        return TaskResponse.from(task, tags);
+    }
+
+    @PostMapping(path = "/{id}/tags")
+    public ResponseEntity addTag(@PathVariable Long id, @RequestBody AddTagRequest request) {
+        tasksService.addTag(id, request.tagId);
         return ResponseEntity
                 .ok()
-                .body(collectedTasks);
+                .build();
+
+    }
+
+    @DeleteMapping(path = "/{id}/tags/{tagId}")
+    public ResponseEntity removeTag(@PathVariable Long id, @PathVariable Long tagId) {
+        tasksService.removeTag(id, tagId);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity getTaskByid(@PathVariable Long id) {
-        try {
-            toTaskResponse(tasksRepository.fetchById(id));
-        } catch (NotFoundException e) {
-            logger.info("Fetching task no {}  no available", id);
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("Task not found  : " + id);
-        }
-        logger.info("Fetching task no. {} time...", id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(toTaskResponse(tasksRepository.fetchById(id)));
+    public TaskResponse getTaskById(@PathVariable Long id) {
+        log.info("Fetching task with id: {}", id);
+        return toTaskResponse(tasksRepository.fetchById(id));
     }
 
     @GetMapping(path = "/{id}/attachments/{filename}")
@@ -106,9 +112,11 @@ public class TasksController {
     }
 
     @PostMapping(path = "/{id}/attachments")
-    public ResponseEntity addAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file)
+    public ResponseEntity addAttachment(@PathVariable Long id,
+                                        @RequestParam("comment") String comment,
+                                        @RequestParam("file") MultipartFile file)
             throws IOException {
-        tasksService.addTaskAttachment(id, file);
+        tasksService.addTaskAttachment(id, file, comment);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -139,15 +147,10 @@ public class TasksController {
             id, @RequestBody UpdateTaskRequest request) {
         tasksService.updateTask(id, request.title, request.description);
         logger.info("Updating task...");
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
-    private TaskResponse toTaskResponse(Task task) {
-        return new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getCreatedAt(),
-                task.getAttachments());
-    }
+
 }

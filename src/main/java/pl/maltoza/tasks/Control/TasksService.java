@@ -7,7 +7,10 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.maltoza.tasks.Boundary.StorageService;
 import pl.maltoza.tasks.Boundary.TasksRepository;
 import pl.maltoza.tasks.Clock;
+import pl.maltoza.tasks.Entity.Attachment;
 import pl.maltoza.tasks.Entity.Task;
+import pl.maltoza.tasks.tags.control.TagsService;
+import pl.maltoza.tasks.tags.entity.Tag;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,12 +23,14 @@ import static java.util.stream.Collectors.toList;
 public class TasksService {
     private final TasksRepository tasksRepository;
     private final StorageService storageService;
+    private final TagsService tagsService;
     private final Clock clock;
 
     @Autowired
-    public TasksService(TasksRepository tasksRepository, StorageService storageService, Clock clock) {
+    public TasksService(TasksRepository tasksRepository, StorageService storageService, TagsService tagsService, Clock clock) {
         this.tasksRepository = tasksRepository;
         this.storageService = storageService;
+        this.tagsService = tagsService;
         this.clock = clock;
     }
 
@@ -38,11 +43,11 @@ public class TasksService {
         return task;
     }
 
-    public void addTaskAttachment(Long taskId, MultipartFile attachment) throws IOException {
+    public void addTaskAttachment(Long taskId, MultipartFile attachment, String comment) throws IOException {
         Task task = tasksRepository.fetchById(taskId);
         if (!attachment.isEmpty()) {
             String filename = storageService.saveFile(taskId, attachment);
-            task.addAttachment(filename);
+            task.addAttachment(filename, comment);
         }
         tasksRepository.save(task);
     }
@@ -73,9 +78,26 @@ public class TasksService {
     public Optional<Resource> loadAttachment(Long id, String filename) throws MalformedURLException {
         Optional<Resource> attachment = Optional.empty();
         Task task = tasksRepository.fetchById(id);
-        if (task.getAttachments().contains(filename)) {
+        if (task.getAttachments()
+                .stream()
+                .map(Attachment::getFilename)
+                .anyMatch(it -> it.equals(filename))){
             attachment = Optional.of(storageService.loadFile(filename));
         }
         return attachment;
+    }
+
+    public void addTag(Long id, Long tagId) {
+        Task task = tasksRepository.fetchById(id);
+        Tag tag = tagsService.findById(tagId);
+        task.addTag(tag);
+        tasksRepository.save(task);
+    }
+
+    public void removeTag(Long id, Long tagId) {
+        Task task = tasksRepository.fetchById(id);
+        Tag tag = tagsService.findById(tagId);
+        task.removeTag(tag);
+        tasksRepository.save(task);
     }
 }

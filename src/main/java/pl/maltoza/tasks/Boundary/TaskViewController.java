@@ -28,7 +28,7 @@ public class TaskViewController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("tasks", tasksService.fetchAll().stream().map(TaskResponse::from).collect(toList()));
+        model.addAttribute("tasks", tasksService.fetchAll().stream().map(TaskViewResponse::from).collect(toList()));
         model.addAttribute("newTask", new CreateTaskRequest());
         return "home";
     }
@@ -38,7 +38,7 @@ public class TaskViewController {
                           @RequestParam("attachment") MultipartFile attachment) throws IOException {
         log.info("adding task to view time...");
         Task task = tasksService.addTask(request.title, request.description);
-        tasksService.addTaskAttachment(task.getId(),attachment);
+        tasksService.addTaskAttachment(task.getId(),attachment, request.attachmentComment);
         return "redirect:/";
     }
 
