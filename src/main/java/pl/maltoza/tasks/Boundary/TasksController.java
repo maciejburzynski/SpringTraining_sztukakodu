@@ -40,13 +40,20 @@ public class TasksController {
     private final TagsService tagsService;
 
     @GetMapping
-    public List<TaskResponse> getTasks(@RequestParam Optional<String> query) {
+    public List<TaskResponse> getTasks(@RequestParam Optional<String> title) {
         logger.info("Fetching all tasks time ...");
-        return query.map(tasksService::filterAllByQuery)
-                .orElseGet(tasksService::fetchAll)
-                .stream()
-                .map(this::toTaskResponse)
-                .collect(toList());
+        return toTaskResponse(title.map(tasksService::filterAllByTitle)
+                .orElseGet(tasksService::fetchAll));
+    }
+
+
+    @GetMapping(path = "/_search")
+    public List<TaskResponse> searchTask(@RequestParam(defaultValue = "false") Boolean attachments) {
+        if (attachments) {
+            return toTaskResponse(tasksService.findWithAttachments());
+        } else {
+            return toTaskResponse(tasksService.fetchAll());
+        }
     }
 
     private TaskResponse toTaskResponse(Task task) {
@@ -152,5 +159,9 @@ public class TasksController {
                 .build();
     }
 
-
+    private List<TaskResponse> toTaskResponse(List<Task> task) {
+        return task.stream()
+                .map(this::toTaskResponse)
+                .collect(toList());
+    }
 }

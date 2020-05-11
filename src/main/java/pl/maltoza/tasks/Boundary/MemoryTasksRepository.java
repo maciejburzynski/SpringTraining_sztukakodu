@@ -52,6 +52,16 @@ public class MemoryTasksRepository implements TasksRepository {
         tasks.add(task);
     }
 
+    @Override
+    public List<Task> findByTitle(String title) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Task> findWithAttachments() {
+        throw new UnsupportedOperationException();
+    }
+
     private Optional<Task> findById(Long id) {
         return tasks.stream()
                 .filter(task -> task.getId().equals(id))

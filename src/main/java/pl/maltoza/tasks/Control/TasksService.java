@@ -61,14 +61,8 @@ public class TasksService {
         return tasksRepository.fetchAll();
     }
 
-    public List<Task> filterAllByQuery(String query) {
-        return tasksRepository.fetchAll()
-                .stream()
-                .filter(task -> {
-                    return task.getTitle().toUpperCase().contains(query.toUpperCase()) ||
-                            task.getDescription().toUpperCase().contains(query.toUpperCase());
-                })
-                .collect(toList());
+    public List<Task> filterAllByTitle(String title) {
+        return tasksRepository.findByTitle(title);
     }
 
     public void removeTask(Long id) {
@@ -99,5 +93,9 @@ public class TasksService {
         Tag tag = tagsService.findById(tagId);
         task.removeTag(tag);
         tasksRepository.save(task);
+    }
+
+    public List<Task> findWithAttachments(){
+        return tasksRepository.findWithAttachments();
     }
 }
