@@ -20,9 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.reducing;
@@ -46,7 +44,6 @@ public class TasksController {
                 .orElseGet(tasksService::fetchAll));
     }
 
-
     @GetMapping(path = "/_search")
     public List<TaskResponse> searchTask(@RequestParam(defaultValue = "false") Boolean attachments) {
         if (attachments) {
@@ -56,11 +53,6 @@ public class TasksController {
         }
     }
 
-    private TaskResponse toTaskResponse(Task task) {
-        List<Long> tagIds = task.getTagRefs().stream().map(TagRef::getTag).collect(toList());
-        Set<Tag> tags = tagsService.findAllById(tagIds);
-        return TaskResponse.from(task, tags);
-    }
 
     @PostMapping(path = "/{id}/tags")
     public ResponseEntity addTag(@PathVariable Long id, @RequestBody AddTagRequest request) {
@@ -164,4 +156,16 @@ public class TasksController {
                 .map(this::toTaskResponse)
                 .collect(toList());
     }
+
+//    private TaskResponse toTaskResponse(Task task) {
+//        List<Long> tagIds = task.getTagRefs().stream().map(TagRef::getTag).collect(toList());
+//        Set<Tag> tags = tagsService.findAllById(tagIds);
+//        return TaskResponse.from(task, tags);
+//    }
+    private TaskResponse toTaskResponse(Task task) {
+        List<Long> tagIds = task.getTagRefs().stream().map(TagRef::getTag).collect(toList());
+        Set<Tag> tags = tagsService.findAllById(tagIds);
+        return TaskResponse.from(task, tags);
+    }
 }
+

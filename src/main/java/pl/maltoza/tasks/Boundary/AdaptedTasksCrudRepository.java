@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tasks.Entity.Task;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -59,11 +61,12 @@ public class AdaptedTasksCrudRepository implements TasksRepository {
 
     @Override
     public List<Task> findByTitle(String title) {
-        return tasksCrudRepository.findByTitle(title);
+        return tasksCrudRepository.findAllByTitleLike(title);
     }
 
     @Override
     public List<Task> findWithAttachments() {
-        return tasksCrudRepository.findWithAttachments();
+        return Collections.emptyList();
+//        return tasksCrudRepository.findWithAttachments();
     }
 }

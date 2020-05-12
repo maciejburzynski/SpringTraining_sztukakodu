@@ -1,27 +1,26 @@
 package pl.maltoza.tasks.Entity;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 import pl.maltoza.tasks.tags.entity.Tag;
 
-import java.time.LocalDate;
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
-@Table("task")
+@Entity
+@Table(name = "task")
+@NoArgsConstructor
 public class Task {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
     private LocalDateTime createdAt;
-    private Set<Attachment> attachments;
-    private Set<TagRef> tagRefs;
+    private transient Set<Attachment> attachments = new HashSet<>();
+    private transient Set<TagRef> tagRefs = new HashSet<>();
 
     public Task(String title, String description, LocalDateTime createdAt) {
         this.title = title;
@@ -37,10 +36,11 @@ public class Task {
         return attachments;
     }
 
-    public void addTag(Tag tag){
+    public void addTag(Tag tag) {
         tagRefs.add(new TagRef(tag));
     }
-    public void removeTag(Tag tag){
+
+    public void removeTag(Tag tag) {
         tagRefs.remove(new TagRef(tag));
     }
 }

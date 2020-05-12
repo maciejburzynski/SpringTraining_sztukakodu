@@ -1,11 +1,12 @@
 package pl.maltoza.tasks.Entity;
 
 import lombok.Data;
-import org.springframework.data.relational.core.mapping.Table;
 import pl.maltoza.tasks.tags.entity.Tag;
 
+import javax.persistence.Table;
+
 @Data
-@Table("tag_task")
+@Table(name ="tag_task")
 public class TagRef {
     private Long tag;
 
