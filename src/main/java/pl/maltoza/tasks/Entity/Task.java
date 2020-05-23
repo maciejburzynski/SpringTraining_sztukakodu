@@ -8,19 +8,35 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "task")
 @NoArgsConstructor
-public class Task {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@NamedEntityGraph(
+        name = "task.detail",
+        attributeNodes = {
+                @NamedAttributeNode("attachments"),
+                @NamedAttributeNode("tags")
+        }
+)
+public class Task extends BaseEntity {
+
     private String title;
     private String description;
     private LocalDateTime createdAt;
-    private transient Set<Attachment> attachments = new HashSet<>();
-    private transient Set<TagRef> tagRefs = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "task")
+    private Set<Attachment> attachments = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "tag_task",
+            joinColumns =
+            @JoinColumn(name = "task"),
+            inverseJoinColumns =
+            @JoinColumn(name = "tag"))
+    private Set<Tag> tags = new HashSet<>();
 
     public Task(String title, String description, LocalDateTime createdAt) {
         this.title = title;
@@ -37,10 +53,10 @@ public class Task {
     }
 
     public void addTag(Tag tag) {
-        tagRefs.add(new TagRef(tag));
+        tags.add(tag);
     }
 
     public void removeTag(Tag tag) {
-        tagRefs.remove(new TagRef(tag));
+        tags.remove(tag);
     }
 }

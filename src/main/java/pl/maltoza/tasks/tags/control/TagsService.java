@@ -3,7 +3,7 @@ package pl.maltoza.tasks.tags.control;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.maltoza.exceptions.NotFoundException;
-import pl.maltoza.tasks.tags.boundary.TagsCrudRepository;
+import pl.maltoza.tasks.tags.boundary.TagsRepository;
 import pl.maltoza.tasks.tags.entity.Tag;
 
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class TagsService {
-    private final TagsCrudRepository tagsRepository;
+    private final TagsRepository tagsRepository;
 
     @Autowired
-    public TagsService(TagsCrudRepository tagsRepository) {
+    public TagsService(TagsRepository tagsRepository) {
         this.tagsRepository = tagsRepository;
     }
 

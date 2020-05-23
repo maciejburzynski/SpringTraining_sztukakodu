@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toSet;
 @AllArgsConstructor
 public class TaskResponse {
     long id;
+    String uuid;
     String title;
     String description;
     LocalDateTime createdAt;
@@ -26,6 +27,7 @@ public class TaskResponse {
     static TaskResponse from(Task task, Set<Tag>tags) {
         return new TaskResponse(
                 task.getId(),
+                task.getUuid(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getCreatedAt(),

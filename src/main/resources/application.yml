@@ -9,5 +9,3 @@ spring:
 logging:
     level:
         org.springframework.jdbc.core: DEBUG
-
-spring.jpa.hibernate.ddl-auto: none

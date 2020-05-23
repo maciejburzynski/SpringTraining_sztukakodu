@@ -25,6 +25,11 @@ public class MemoryTasksRepository implements TasksRepository {
     }
 
     @Override
+    public void addAll(Iterable<Task> taskIterable) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Task fetchById(Long id) {
         return findById(id)
                 .orElseThrow(() -> new NotFoundException("Task not found : " + id));

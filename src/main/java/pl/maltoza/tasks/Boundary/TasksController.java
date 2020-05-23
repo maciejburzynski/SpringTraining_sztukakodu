@@ -16,12 +16,10 @@ import pl.maltoza.tasks.Entity.Task;
 import pl.maltoza.tasks.tags.control.TagsService;
 import pl.maltoza.tasks.tags.entity.Tag;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
@@ -158,14 +156,12 @@ public class TasksController {
     }
 
 //    private TaskResponse toTaskResponse(Task task) {
-//        List<Long> tagIds = task.getTagRefs().stream().map(TagRef::getTag).collect(toList());
+//        List<Long> tagIds = task.getTags().stream().map(TagRef::getTag).collect(toList());
 //        Set<Tag> tags = tagsService.findAllById(tagIds);
 //        return TaskResponse.from(task, tags);
 //    }
     private TaskResponse toTaskResponse(Task task) {
-        List<Long> tagIds = task.getTagRefs().stream().map(TagRef::getTag).collect(toList());
-        Set<Tag> tags = tagsService.findAllById(tagIds);
-        return TaskResponse.from(task, tags);
+        return TaskResponse.from(task, task.getTags());
     }
 }
 

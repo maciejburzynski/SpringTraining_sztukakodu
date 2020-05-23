@@ -37,6 +37,11 @@ public class AdaptedTasksCrudRepository implements TasksRepository {
     }
 
     @Override
+    public void addAll(Iterable<Task> taskIterable) {
+        tasksCrudRepository.saveAll(taskIterable);
+    }
+
+    @Override
     public Task fetchById(Long id) {
         return tasksCrudRepository
                 .findById(id)
