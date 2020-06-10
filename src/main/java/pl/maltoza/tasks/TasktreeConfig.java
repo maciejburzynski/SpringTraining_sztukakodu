@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.maltoza.tasks.Boundary.FileStorageService;
-import pl.maltoza.tasks.Boundary.StorageService;
+import pl.maltoza.tasks.boundary.FileStorageService;
+import pl.maltoza.tasks.boundary.StorageService;
 
 import java.nio.file.Path;
 

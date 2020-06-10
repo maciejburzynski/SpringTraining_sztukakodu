@@ -1,13 +1,12 @@
-package pl.maltoza.tasks;
+package pl.maltoza.tasks.confTraining;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-
-@Data
 @Component
+@Data
 @ConfigurationProperties(prefix = "app.tasks")
-public class StorageConfig {
-    private String PathToAddFile;
+public class TasksConfig {
+private String endpointMessage;
 }
