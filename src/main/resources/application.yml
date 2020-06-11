@@ -9,3 +9,16 @@ spring:
 logging:
     level:
         org.springframework.jdbc.core: DEBUG
+
+spring.h2.console.enabled: true
+
+spring.jpa:
+    show-sql: true
+    properties.hibernate:
+        format_sql: true
+        generate_statistics: true
+
+javax.cache.provider: org.ehcache.jsr107.EhcacheCachingProvider
+cache:
+    use_second_level_cache: true
+    region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory

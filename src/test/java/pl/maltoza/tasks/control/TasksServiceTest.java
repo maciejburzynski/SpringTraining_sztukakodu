@@ -23,14 +23,14 @@ public class TasksServiceTest {
     @Test
     public void optimisticLockingTest() {
         //given
-        Task task = tasksService.addTask("Kupić lodówke", "Pod zabudowe", tags());
+        Task task = tasksService.addTask("Kupic lodowke", "Pod zabaaauaaaaaadowe", tags());
 
         //when
         Task findOne = tasksService.findById(task.getId());
         Task findOther = tasksService.findById(task.getId());
 
-        findOne.setTitle("Kupić lodówke");
-        findOther.setTitle("Sprzedać lodówke");
+        findOne.setTitle("KUPIC LODOWKE");
+        findOther.setTitle("SPRZEDAC LODOWKE");
 
         tasksService.save(findOne);
         tasksService.save(findOther);

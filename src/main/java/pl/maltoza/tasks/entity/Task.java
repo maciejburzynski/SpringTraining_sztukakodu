@@ -1,6 +1,7 @@
 package pl.maltoza.tasks.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.maltoza.tags.entity.Tag;
 
 import javax.persistence.*;
@@ -21,16 +22,19 @@ import java.util.Set;
                 @NamedAttributeNode("tags")
         }
 )
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Task extends BaseEntity {
 
     private String title;
     private String description;
     private LocalDateTime createdAt;
+
     @Version
     private Long version;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "task")
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Attachment> attachments = new HashSet<>();
 
     @ManyToMany(cascade = {
@@ -41,6 +45,7 @@ public class Task extends BaseEntity {
             @JoinColumn(name = "task"),
             inverseJoinColumns =
             @JoinColumn(name = "tag"))
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Tag> tags = new HashSet<>();
 
     public Task(String title, String description, LocalDateTime createdAt) {
