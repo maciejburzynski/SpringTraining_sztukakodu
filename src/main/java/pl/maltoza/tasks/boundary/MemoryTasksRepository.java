@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tasks.entity.Task;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Getter
@@ -64,6 +65,17 @@ public class MemoryTasksRepository implements TasksRepository {
     public List<Task> findWithAttachments() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public List<Task> findPriorityTasks() {
+        return null;
+    }
+
+    @Override
+    public List<Task> findDueTasks(LocalDate now) {
+        return null;
+    }
+
 
     private Optional<Task> findById(Long id) {
         return tasks.stream()

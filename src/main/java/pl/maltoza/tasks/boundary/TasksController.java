@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.maltoza.tasks.confTraining.TasksConfig;
 import pl.maltoza.tasks.control.TasksService;
 import pl.maltoza.tasks.entity.Task;
 import pl.maltoza.tags.control.TagsService;
@@ -26,13 +27,16 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 @RequestMapping(value = ("/restapi/tasks"))
 @RequiredArgsConstructor
-
 public class TasksController {
     private final Logger logger = LoggerFactory.getLogger(TasksController.class);
     private final TasksRepository tasksRepository;
     private final TasksService tasksService;
-    private final TagsService tagsService;
+    private final TasksConfig tasksConfig;
 
+    @GetMapping(path = "/hello")
+    public String hello(){
+        return tasksConfig.getEndpointMessage();
+    }
     @GetMapping
     public List<TaskResponse> getTasks(@RequestParam Optional<String> title) {
         logger.info("Fetching all tasks time ...");
@@ -153,7 +157,7 @@ public class TasksController {
                 .collect(toList());
     }
 
-//    private TaskResponse toTaskResponse(Task task) {
+    //    private TaskResponse toTaskResponse(Task task) {
 //        List<Long> tagIds = task.getTags().stream().map(TagRef::getTag).collect(toList());
 //        Set<Tag> tags = tagsService.findAllById(tagIds);
 //        return TaskResponse.from(task, tags);

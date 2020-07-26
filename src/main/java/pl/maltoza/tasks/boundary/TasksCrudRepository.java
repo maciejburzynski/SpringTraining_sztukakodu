@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.maltoza.tasks.entity.Task;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TasksCrudRepository extends JpaRepository<Task, Long> {
@@ -34,4 +35,8 @@ public interface TasksCrudRepository extends JpaRepository<Task, Long> {
 
     @Query("FROM Task")
     List<Task> findAllLazy();
+
+    List<Task> findByPriorityIsTrue();
+
+    List<Task> findByDueDateIsLessThanEqual(LocalDate now);
 }

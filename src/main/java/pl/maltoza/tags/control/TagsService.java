@@ -6,7 +6,6 @@ import pl.maltoza.exceptions.NotFoundException;
 import pl.maltoza.tags.boundary.TagsRepository;
 import pl.maltoza.tags.entity.Tag;
 
-import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

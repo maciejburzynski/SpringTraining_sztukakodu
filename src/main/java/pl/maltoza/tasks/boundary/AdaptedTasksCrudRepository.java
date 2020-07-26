@@ -3,8 +3,10 @@ package pl.maltoza.tasks.boundary;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import pl.maltoza.exceptions.NotFoundException;
+import pl.maltoza.tasks.Clock;
 import pl.maltoza.tasks.entity.Task;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,5 +73,15 @@ public class AdaptedTasksCrudRepository implements TasksRepository {
     public List<Task> findWithAttachments() {
         return Collections.emptyList();
 //        return tasksCrudRepository.findWithAttachments();
+    }
+
+    @Override
+    public List<Task> findPriorityTasks() {
+        return tasksCrudRepository.findByPriorityIsTrue();
+    }
+
+    @Override
+    public List<Task> findDueTasks(LocalDate now) {
+        return tasksCrudRepository.findByDueDateIsLessThanEqual(now);
     }
 }

@@ -1,0 +1,14 @@
+app.tasks.endpointMessage: Hello Worldddddddd from Configg
+
+
+
+
+spring.jpa:
+  show-sql: true
+  properties.hibernate:
+    format_sql: false
+
+
+    generate_statistics: false
+cache:
+  use_second_level_cache: false

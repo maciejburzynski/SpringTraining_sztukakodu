@@ -2,6 +2,7 @@ package pl.maltoza.tasks.boundary;
 
 import pl.maltoza.tasks.entity.Task;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TasksRepository {
@@ -21,4 +22,7 @@ public interface TasksRepository {
 
     List<Task> findWithAttachments();
 
+    List<Task> findPriorityTasks();
+
+    List<Task> findDueTasks(LocalDate now);
 }

@@ -1,47 +1,65 @@
 package pl.maltoza.tasks.control;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import pl.maltoza.tags.control.TagsService;
+import pl.maltoza.tasks.Clock;
+import pl.maltoza.tasks.SystemClock;
+import pl.maltoza.tasks.boundary.StorageService;
+import pl.maltoza.tasks.boundary.TasksRepository;
 import pl.maltoza.tasks.entity.Task;
 
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class TasksServiceTest {
+class TasksServiceTest {
 
-    @Autowired
+    TasksRepository tasksRepository;
     TasksService tasksService;
+    Clock clock = new SystemClock();
 
-    @Autowired
-    TagsService tagsService;
+    @BeforeEach
+    public void setup(){
+        tasksRepository = mock(TasksRepository.class);
+        tasksService = new TasksService(
+                tasksRepository,
+                mock(StorageService.class),
+                mock(TagsService.class),
+                clock
+                );
+    }
 
     @Test
-    public void optimisticLockingTest() {
-        //given
-        Task task = tasksService.addTask("Kupic lodowke", "Pod zabaaauaaaaaadowe", tags());
+    public void shouldReturnPriorityTasks(){
 
-        //when
-        Task findOne = tasksService.findById(task.getId());
-        Task findOther = tasksService.findById(task.getId());
+//        given
+        Task t1 = new Task();
+        t1.setPriority(true);
+        Task t2 = new Task();
+        t2.setPriority(false);
+        Task t3 = new Task();
+        t3.setDueDate(clock.date().minusDays(1));
+        Task t4 = new Task();
+        t4.setDueDate(clock.date());
+        Task t5 = new Task();
+        t5.setDueDate(clock.date().plusDays(1));
+        when(tasksRepository.findPriorityTasks())
+                .thenReturn(Arrays.asList(t1));
+        when(tasksRepository.findDueTasks(any()))
+                .thenReturn(Arrays.asList(t3, t4));
 
-        findOne.setTitle("KUPIC LODOWKE");
-        findOther.setTitle("SPRZEDAC LODOWKE");
+        //        when
 
-        tasksService.save(findOne);
-        tasksService.save(findOther);
-
-        //then
-        Task actual = tasksService.findById(task.getId());
-        assertThat(actual.getTitle()).isEqualTo("Sprzedać lodówke");
-
+        List<Task> tasks = tasksService.priorityTask();
+//        then
+        assertThat(tasks)
+                .containsExactlyInAnyOrder(t1, t3, t4);
     }
 
-    private HashSet<String> tags(String... tags) {
-        return new HashSet<>(asList(tags));
-    }
 }

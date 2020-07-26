@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TasksService {
@@ -49,6 +50,20 @@ public class TasksService {
         task.addTags(tagsForTask);
         tasksRepository.add(task);
         return task;
+    }
+
+    public List<Task> priorityTask() {
+        List<Task> dueTasks = tasksRepository.findDueTasks(clock.date());
+        List<Task> priorityTasks = tasksRepository.findPriorityTasks();
+
+        return Stream
+                .concat(
+
+                        dueTasks.stream(),
+                        priorityTasks.stream())
+
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public void addTaskAttachment(Long taskId, MultipartFile attachment, String comment) throws IOException {

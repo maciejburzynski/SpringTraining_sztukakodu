@@ -5,6 +5,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.maltoza.tags.entity.Tag;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,6 +28,8 @@ public class Task extends BaseEntity {
 
     private String title;
     private String description;
+    private boolean priority;
+    private LocalDate dueDate;
     private LocalDateTime createdAt;
 
     @Version
@@ -72,5 +75,13 @@ public class Task extends BaseEntity {
 
     public void removeTag(Tag tag) {
         tags.remove(tag);
+    }
+
+    public void markPriority(boolean priority){
+        this.priority = priority;
+    }
+
+    public void setDueDate(LocalDate date){
+        this.dueDate = date;
     }
 }
