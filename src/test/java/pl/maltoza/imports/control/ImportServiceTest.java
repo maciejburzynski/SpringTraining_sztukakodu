@@ -2,6 +2,7 @@ package pl.maltoza.imports.control;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ import java.util.HashSet;
 @SpringBootTest
 @Slf4j
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Tag("A")
 public class ImportServiceTest {
 
     @Autowired

@@ -15,3 +15,8 @@ spring.jpa:
   properties.hibernate:
     format_sql: true
     generate_statistics: true
+
+
+#spring.security.user.name: "user"
+  spring.security:
+  password: pass
