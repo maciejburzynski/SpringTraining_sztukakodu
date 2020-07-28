@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import pl.maltoza.tasks.Clock;
 import pl.maltoza.tasks.TestConfig;
@@ -16,10 +15,7 @@ import java.util.Optional;
 
 @SpringBootTest
 @TestPropertySource(
-        locations = {
-                "classpath:customowe.yml"
-        }
-//        properties = "app.tasks.endpointMessage: Hello Worldddddddd from Configg"
+    properties = "app.tasks.endpointMessage: Hello Worldddddddd from Configg"
 )
 @Import(TestConfig.class)
 class TasksControllerIntegrationTest {
@@ -52,10 +48,10 @@ class TasksControllerIntegrationTest {
         List<TaskResponse> tasks = tasksController.getTasks(Optional.empty());
 //        expect
         Assertions.assertThat(tasks)
-                .hasSize(1)
-                .extracting(g -> g.getCreatedAt())
-                .first()
-                .isEqualTo(clock.time());
+            .hasSize(1)
+            .extracting(g -> g.getCreatedAt())
+            .first()
+            .isEqualTo(clock.time());
 
     }
 }

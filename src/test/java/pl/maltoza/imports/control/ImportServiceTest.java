@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import pl.maltoza.imports.boundary.ImportProject;
 import pl.maltoza.imports.boundary.ImportTask;
 import pl.maltoza.projects.control.ProjectService;
@@ -14,9 +16,9 @@ import pl.maltoza.tasks.control.TasksService;
 import java.util.Arrays;
 import java.util.HashSet;
 
-
 @SpringBootTest
 @Slf4j
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ImportServiceTest {
 
     @Autowired
